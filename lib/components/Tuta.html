@@ -1,0 +1,176 @@
+{{#if style}}
+  <div ref:box class="tuta form {{__focus ? 'active' : ''}}" style="
+    min-width: 2em;
+    height: {{style.height}};
+  ">
+    <input ref:input type="text" class="tuta input"
+      on:focus="handleFocus()"
+      on:blur="handleBlur()" style="
+        width: {{__focus ? style.width : '2em'}};
+        height: {{style.height}};
+        border: {{__focus ? style.border : '1px solid transparent'}};
+        border-radius: {{style.borderRadius}};
+        -webkit-transition: {{style.transition}};
+        transition: {{style.transition}};
+        color: {{__focus ? 'inherit' : 'transparent'}};
+        font-size: calc({{style.height}} / 1.618);
+        background: {{__focus ? style.baseColor : ''}};
+
+        {{iconPosition === 'left' ? 'left: -1.1em' : 'right: .4em'}};
+        {{iconPosition === 'left' ? 'text-align: left' : 'text-align: right'}};
+        {{iconPosition === 'left' ? 'padding-left: 2em' : 'padding-right: 2em'}};
+      ">
+    <button ref:button class="tuta button" style="
+      width: 2em;
+      height: calc({{style.height}} / 1.618);
+      -webkit-transition: {{style.transition}};
+      transition: color {{style.transition}}, fill {{style.transition}};
+      color: {{__buttonActive ? style.accentColor : 'inherit'}};
+      fill: {{__buttonActive ? style.accentColor : 'inherit'}};
+      {{iconPosition === 'left' ? 'left: -1em' : 'right: 1em'}};
+    "
+      on:mouseover="enterButton()"
+      on:mouseleave="leaveButton()"
+      on:click="handleSubmit(event)">
+        {{#if icon !== null}}
+          {{{icon}}}
+        {{else}}
+          <svg version="1.1" viewBox="0 0 16 16" class="octicon octicon-search" aria-hidden="true">
+            <path fill-rule="evenodd" d="M15.7 13.3l-3.81-3.83A5.93 5.93 0 0 0 13 6c0-3.31-2.69-6-6-6S1 2.69 1 6s2.69 6 6 6c1.3 0 2.48-.41 3.47-1.11l3.83 3.81c.19.2.45.3.7.3.25 0 .52-.09.7-.3a.996.996 0 0 0 0-1.41v.01zM7 10.7c-2.59 0-4.7-2.11-4.7-4.7 0-2.59 2.11-4.7 4.7-4.7 2.59 0 4.7 2.11 4.7 4.7 0 2.59-2.11 4.7-4.7 4.7z"/>
+          </svg>
+        {{/if}}
+      </button>
+  </div>
+{{/if}}
+
+<style scoped>
+svg {
+  display: block;
+}
+
+.form {
+  position: relative;
+}
+
+.input,
+.button {
+  position: absolute;
+  bottom: 50%;
+  transform: translateY(50%);
+  font-size: inherit;
+  box-sizing: border-box;
+  padding: .3em .5em;
+  border: none;
+  background: transparent;
+  outline: none;
+}
+
+.input {
+  text-align: right;
+  z-index: 1;
+}
+
+.button {
+  cursor: pointer;
+  z-index: 2;
+}
+</style>
+
+<script>
+import raf from 'raf';
+
+export default {
+  data() {
+    return {
+      defaultStyle: {
+        width: '10em',
+        height: '2em',
+        border: '1px solid #222',
+        borderRadius: '2px',
+        transition: '.2s cubic-bezier(0.455, 0.03, 0.515, 0.955)',
+        baseColor: '#fff',
+        subColor: '#222',
+        accentColor: '#cb1b45'
+      },
+      icon: null,
+      // icon: '<svg id="Capa_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 475.084 475.084" enable-background="new 0 0 475.084 475.084"><path d="M464.5 412.8l-98-98C390.3 281 402 243 402 201c0-27.2-5.3-53.2-16-78-10.4-25-24.7-46.3-42.7-64.3-18-18-39.4-32.3-64.2-43C254.3 5.4 228.3 0 201 0c-27.2 0-53.2 5.3-78 15.8-25 10.6-46.3 25-64.3 43s-32.3 39.3-43 64C5.4 148 0 174 0 201c0 27.2 5.3 53.2 15.8 78 10.6 25 25 46.3 43 64.3s39.3 32.3 64 43c25 10.4 51 15.7 78.2 15.7 42 0 80-11.8 114-35.4l97.8 97.6c7 7.3 15.5 11 25.7 11 10 0 18.5-3.7 25.7-11 7.3-7.2 11-15.8 11-25.7 0-10-3.6-18.6-10.7-25.7zm-173-121.4C266.2 316.4 236 329 201 329s-65.3-12.6-90.4-37.6c-25-25-37.5-55.2-37.5-90.4s12.6-65.3 37.6-90.4c25-25 55.2-37.5 90.4-37.5s65.3 12.6 90.4 37.6c25 25 37.5 55.2 37.5 90.4s-12.6 65.3-37.6 90.4z"/></svg>',
+      iconPosition: 'right',
+      style: null,
+
+      onSubmit(text, form, reset) {
+        console.log('text', text);
+        console.log('form', form);
+        reset();
+      },
+
+      __focus: false,
+      __buttonActive: false
+    };
+  },
+  methods: {
+    handleFocus() {
+      this.set({__focus: true});
+    },
+    handleBlur() {
+      if (!this.refs.input.value) {
+        this.set({__focus: false});
+      }
+    },
+    enterButton() {
+      this.set({__buttonActive: true});
+    },
+    leaveButton() {
+      this.set({__buttonActive: false});
+    },
+    handleSubmit(ev) {
+      ev.preventDefault();
+      if (!this.get('__focus')) {
+        this.set({__focus: true});
+        this.refs.input.focus();
+        return;
+      }
+
+      if (!this.refs.input.value) {
+        return;
+      }
+
+      this.get('onSubmit')(
+        this.refs.input.value, this.refs.button.form, this.reset.bind(this)
+      );
+    },
+    reset() {
+      this.set({__focus: false});
+      this.refs.input.value = '';
+    }
+  },
+  oncreate() {
+    if (!/left|right/.test(this.get('iconPosition'))) {
+      throw new Error('Specify `left` or `right` for `data.iconPosition`');
+    }
+
+    if (this.get('style') === null) {
+      this.set({style: Object.assign({}, this.defaultStyle)});
+    }
+
+    this.observe('style', newStyle => {
+      const {defaultStyle} = this.get();
+
+      if (typeof newStyle === 'undefined') {
+        this.set({
+          style: defaultStyle
+        });
+        return;
+      }
+
+      if (typeof newStyle !== 'object' ||
+          Array.isArray(newStyle)) {
+        throw new Error('`style` must be Object');
+      }
+
+      this.set({
+        style: Object.assign({}, defaultStyle, newStyle)
+      });
+    });
+  }
+};
+</script>
