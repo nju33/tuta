@@ -1,6 +1,6 @@
 {
   "name": "tuta",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "🌿 A growing search form",
   "main": "dist/tuta.umd.js",
   "jsnext:main": "dist/tuta.es.js",
