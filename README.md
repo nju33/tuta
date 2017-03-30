@@ -33,7 +33,7 @@ import Tuta from 'tuta';
 new Tuta({
   target: document.getElementById('form')
   data: {
-    defaultStyle: {
+    style: {
       // defaults
       width: '10em',
       height: '2em',
